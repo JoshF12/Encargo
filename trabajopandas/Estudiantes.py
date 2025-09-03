@@ -1,3 +1,6 @@
+import pandas as pd
+import numpy as np
+
 estudiantes = [
     {"nombre": "Sofía", "notas": [6.5, 7.0, 3.2]},
     {"nombre": "Mateo", "notas": [5.5, 4.0, 6.2]},
@@ -30,4 +33,21 @@ estudiantes = [
     {"nombre": "Sebastián", "notas": [5.0, 4.5, 4.8]},
     {"nombre": "Constanza", "notas": [3.2, 4.0, 3.9]}
 ]
+
+def limpiar_notas(estudiantes):
+    datos = pd.DataFrame(estudiantes)
+    if datos.empty or "notas" not in datos.columns:
+        return pd.DataFrame()
+    datos_validos = datos[
+        datos["notas"].apply(lambda x: isinstance(x, list) and len(x) > 0)
+    ]
+    notas_expandido = datos_validos["notas"].apply(pd.Series)
+    notas_numericas = notas_expandido.apply(pd.to_numeric, errors="coerce")
+    # Filtrar notas fuera del rango válido (1.0 a 7.0)
+    notas_filtradas = notas_numericas.where((notas_numericas >= 1.0) & (notas_numericas <= 7.0))
+    notas_limpias = notas_filtradas.dropna(how="all")
+    if notas_limpias.empty:
+        return pd.DataFrame()
+    notas_limpias.columns = notas_limpias.columns.map(lambda i: f"Nota {i + 1}")
+    return notas_limpias
 
