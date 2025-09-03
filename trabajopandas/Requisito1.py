@@ -1,21 +1,17 @@
 # calcular el promedio de cada estudiante y mostrar cual es el max y min (promedio)
 
 import pandas as pd
+from Estudiantes import estudiantes, limpiar_notas
 
-from Estudiantes import estudiantes
+notas_limpias = limpiar_notas(estudiantes)
 
-df = pd.DataFrame(estudiantes)
-
-# Filtrar estudiantes que tengan exactamente 3 notas
-df = df[df["notas"].apply(lambda x: isinstance(x, list) and len(x) == 3)]
-
-if df.empty:
-    print("No hay estudiantes con la cantidad correcta de notas.")
+if notas_limpias.empty:
+    print("No hay estudiantes con notas válidas.")
 else:
-    df["promedio"] = df["notas"].apply(lambda x: round(sum(x) / len(x), 1))
-    max_promedio = df["promedio"].max()
-    min_promedio = df["promedio"].min()
+    notas_limpias["promedio"] = notas_limpias.mean(axis=1).round(1)
+    max_promedio = notas_limpias["promedio"].max()
+    min_promedio = notas_limpias["promedio"].min()
 
-    print(df)
+    print(notas_limpias)
     print("Promedio máximo:", max_promedio)
     print("Promedio mínimo:", min_promedio)
